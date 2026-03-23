@@ -1,50 +1,64 @@
-# Welcome to your Expo app 👋
+Sentio (ElderlyMonitor)
+基于 React Native 的远程高龄者居家监护与情绪感知系统
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Sentio 是一款专为远程照护设计的移动应用。它通过手机内置传感器实现非侵入式的健康监测（如跌倒检测），并利用 Firebase 实现子女端与父母端的实时数据同步、位置追踪及社交互动。
 
-## Get started
+核心功能
+1. 父母端 (Parent Terminal)
+实时心率模拟：通过动画与数据模拟心率跳动，监测静息与运动模式。
 
-1. Install dependencies
+智能跌倒检测：利用 expo-sensors 加速度计，在检测到剧烈冲击（G值异常）时触发报警。
 
-   ```bash
-   npm install
-   ```
+自动位置上传：触发报警时，系统自动调用 expo-location 获取经纬度并同步至云端。
 
-2. Start the app
+黑色朋友圈 (Moments)：全黑护眼设计，支持发布文字动态、查看服务器时间戳及回复子女评论。
 
-   ```bash
-   npx expo start
-   ```
+2. 子女端 (Child Terminal)
+实时状态看板：通过 Firebase Realtime Database 远程查看父母的心率及警报状态。
 
-In the output, you'll find options to open the app in a
+紧急位置导航：接收警报后，子女可点击弹窗中的位置信息，自动唤起原生地图（Apple Maps/高德/Google Maps）进行导航。
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+双向互动通信：在朋友圈下与父母进行实时互动评论。
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+技术栈
+框架: React Native (Expo SDK)
 
-## Get a fresh project
+语言: TypeScript
 
-When you're ready, run:
+后端: Firebase Realtime Database (地理位置存储在 asia-southeast1)
 
-```bash
-npm run reset-project
-```
+传感器: expo-sensors (Accelerometer), expo-location
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+路由: expo-router (基于文件系统的路由管理)
 
-## Learn more
+快速开始
+1. 环境准备
+确保你已安装 Node.js 和 Expo CLI。
 
-To learn more about developing your project with Expo, look at the following resources:
+2. 安装依赖
+Bash
+npm install
+# 或者使用 npx 安装特定原生组件
+npx expo install expo-sensors expo-location expo-linking
+3. 配置 Firebase
+在根目录创建 firebaseConfig.ts 并填入你的配置信息：
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+TypeScript
+// app/firebaseConfig.ts
+export const db = ... // 初始化你的 Firebase Database
+4. 启动项目
+Bash
+npx expo start
+项目结构
+Plaintext
+├── app/
+│   ├── (parentTab)/      # 父母端 Tab 路由 (Home, Alerts)
+│   ├── (childTab)/       # 子女端 Tab 路由 (Monitor, Alerts)
+│   ├── firebaseConfig.ts # Firebase 配置文件
+│   └── index.tsx         # 入口选择页面：选择进入父母端或子女端
+├── constants/            # 样式与主题配置
+└── components/           # 通用 UI 组件
+注意事项
+定位权限：在真机测试时，请务必授予应用“始终允许”定位权限。
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Web 端限制：由于浏览器安全策略，Web 端子女看板在非 HTTPS 环境下无法直接获取父母精确坐标，建议配合真机父母端进行测试。
